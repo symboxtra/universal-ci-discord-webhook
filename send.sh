@@ -13,13 +13,13 @@ case $1 in
   "success" )
     EMBED_COLOR=3066993
     STATUS_MESSAGE="Passed"
-    AVATAR="https://wiki.jenkins-ci.org/download/attachments/2916393/jenkins-thpr.svg"
+    AVATAR="https://jenkins.io/images/logos/cute/cute.png"
     ;;
 
   "failure" )
     EMBED_COLOR=15158332
     STATUS_MESSAGE="Failed"
-    AVATAR="https://wiki.jenkins-ci.org/download/attachments/2916393/fire-jenkins.svg"
+    AVATAR="https://jenkins.io/images/logos/fire/fire.png"
     ;;
 
   * )
