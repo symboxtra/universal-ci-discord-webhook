@@ -1,6 +1,7 @@
 #!/bin/bash
 
 JENKINS_REPO_SLUG="symboxtra/SplitSound-Android"
+OS_NAME="Linux"
 
 if [ -z "$2" ]; then
   echo -e "WARNING!!\nYou need to pass the WEBHOOK_URL environment variable as the second argument to this script.\nFor details & guide, visit: https://github.com/k3rn31p4nic/travis-ci-discord-webhook" && exit
@@ -44,6 +45,7 @@ fi
 #else
 #  URL=""
 #fi
+URL="https://github.com/$JENKINS_REPO_SLUG/commit/$GIT_COMMIT"
 
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
@@ -52,7 +54,7 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "Job #'"$BUILD_NUMBER"' (Build #'"$BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$JENKINS_REPO_SLUG"'",
+      "name": "#'"$BUILD_NUMBER"' - '"${JENKINS_REPO_SLUG#*/}"' - '"$OS_NAME"' - '"$STATUS_MESSAGE"'",
       "url": "'"$BUILD_URL"'/console",
       "icon_url": "'$AVATAR'"
     },
@@ -67,7 +69,7 @@ WEBHOOK_DATA='{
       },
       {
         "name": "Branch/Tag",
-        "value": "'"[\`$GIT_BRANCH\`](https://github.com/$JENKINS_REPO_SLUG/tree/$GIT_BRANCH)"'",
+        "value": "'"[\`${GIT_BRANCH#*/}\`](https://github.com/$JENKINS_REPO_SLUG/tree/${GIT_BRANCH#*/})"'",
         "inline": true
       }
     ],
