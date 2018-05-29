@@ -48,12 +48,12 @@ fi
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
   "username": "",
-  "avatar_url": "https://travis-ci.org/images/logos/TravisCI-Mascot-1.png",
+  "avatar_url": "https://wiki.jenkins.io/download/attachments/2916393/logo.png?version=1&modificationDate=1302753947000&api=v2",
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
-      "name": "#'"$TRAVIS_BUILD_NUMBER"' - '"$REPO_SLUG"' - '"$OS_NAME"' - '"$STATUS_MESSAGE"'",
-      "url": "https://travis-ci.org/'"$TRAVIS_REPO_SLUG"'/builds/'"$TRAVIS_BUILD_ID"'",
+      "name": "Job #'"$BUILD_NUMBER"' (Build #'"$BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$JENKINS_REPO_SLUG"'",
+      "url": "'"$BUILD_URL"'/console",
       "icon_url": "'$AVATAR'"
     },
     "title": "'"$COMMIT_SUBJECT"'",
@@ -62,12 +62,12 @@ WEBHOOK_DATA='{
     "fields": [
       {
         "name": "Commit",
-        "value": "'"[\`${TRAVIS_COMMIT:0:7}\`](https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT)"'",
+        "value": "'"[\`${GIT_COMMIT:0:7}\`](https://github.com/$JENKINS_REPO_SLUG/commit/$GIT_COMMIT)"'",
         "inline": true
       },
       {
         "name": "Branch/Tag",
-        "value": "'"[\`$TRAVIS_BRANCH\`](https://github.com/$TRAVIS_REPO_SLUG/tree/$TRAVIS_BRANCH)"'",
+        "value": "'"[\`$GIT_BRANCH\`](https://github.com/$JENKINS_REPO_SLUG/tree/$GIT_BRANCH)"'",
         "inline": true
       }
     ],
@@ -75,5 +75,5 @@ WEBHOOK_DATA='{
   } ]
 }'
 
-(curl --fail --progress-bar -A "Test-Webhook" -H Content-Type:application/json -H X-Author:k3rn31p4nic#8383 -d "$WEBHOOK_DATA" "$2" \
+(curl --fail --progress-bar -A "TravisCI-Webhook" -H Content-Type:application/json -H X-Author:k3rn31p4nic#8383 -d "$WEBHOOK_DATA" "$2" \
   && echo -e "\\n[Webhook]: Successfully sent the webhook.") || echo -e "\\n[Webhook]: Unable to send webhook."
