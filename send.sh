@@ -53,7 +53,7 @@ WEBHOOK_DATA='{
     "color": '$EMBED_COLOR',
     "author": {
       "name": "Job #'"$BUILD_NUMBER"' (Build #'"$BUILD_NUMBER"') '"$STATUS_MESSAGE"' - '"$JENKINS_REPO_SLUG"'",
-      "url": "http://jenkins.symboxtra.tk/job/'"$JOB_NAME"'/'"$BUILD_NUMBER"'/console",
+      "url": "'"$BUILD_URL"'/console",
       "icon_url": "'$AVATAR'"
     },
     "title": "'"$COMMIT_SUBJECT"'",
