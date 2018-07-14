@@ -18,7 +18,7 @@ fi
 if [ -z "$STATUS" ]; then
     echo -e "WARNING!!"
     echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
-    echo -e "For details & guide, visit: https://github.com/k3rn31p4nic/travis-ci-discord-webhook"
+    echo -e "For details & guide, visit: https://github.com/symboxtra/jenkins-discord-webhook"
     exit
 fi
 
@@ -108,7 +108,7 @@ fi
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
   "username": "",
-  "avatar_url": "https://wiki.jenkins.io/download/attachments/2916393/headshot.png?version=1&modificationDate=1302753947000&api=v2",
+  "avatar_url": "$AVATAR",
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
