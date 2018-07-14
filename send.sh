@@ -175,3 +175,5 @@ fi
 if false ; then
     echo "JK we needed one more"
 fi
+true || echo "Balanced?"
+true
