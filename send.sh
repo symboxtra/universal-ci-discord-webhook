@@ -162,3 +162,13 @@ WEBHOOK_DATA='{
 
 (curl -v --fail --progress-bar -A "Jenkins-Webhook" -H Content-Type:application/json -H X-Author:k3rn31p4nic#8383 -d "$WEBHOOK_DATA" "$WEBHOOK_URL" \
   && echo -e "\\n[Webhook]: Successfully sent the webhook.") || echo -e "\\n[Webhook]: Unable to send webhook."
+
+if false ; then
+    echo "This code"
+fi
+if false ; then
+    echo "should make"
+fi
+if false ; then
+    echo "the coverage 50/50"
+fi
