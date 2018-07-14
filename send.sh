@@ -108,7 +108,7 @@ fi
 TIMESTAMP=$(date --utc +%FT%TZ)
 WEBHOOK_DATA='{
   "username": "",
-  "avatar_url": "$AVATAR",
+  "avatar_url": "'$AVATAR'",
   "embeds": [ {
     "color": '$EMBED_COLOR',
     "author": {
@@ -176,4 +176,4 @@ if false ; then
     echo "JK we needed one more"
 fi
 true || echo "Balanced?"
-echo $WEBHOOK_DATA
+true
