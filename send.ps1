@@ -42,15 +42,19 @@ Switch ($STATUS) {
   }
 }
 
-if (!$GIT_COMMIT) {
-    $GIT_COMMIT="$(git log -1 --pretty="%H")"
+if (!$env:env:GIT_COMMIT) {
+    $env:GIT_COMMIT="$(git log -1 --pretty="%H")"
 }
 
-$AUTHOR_NAME="$(git log -1 "$GIT_COMMIT" --pretty="%aN")"
-$COMMITTER_NAME="$(git log -1 "$GIT_COMMIT" --pretty="%cN")"
-$COMMIT_SUBJECT="$(git log -1 "$GIT_COMMIT" --pretty="%s")"
-$COMMIT_MESSAGE="$(git log -1 "$GIT_COMMIT" --pretty="%b")"
-$COMMIT_TIME="$(git log -1 "$GIT_COMMIT" --pretty="%ct")"
+$AUTHOR_NAME="$(git log -1 "$env:GIT_COMMIT" --pretty="%aN")"
+$COMMITTER_NAME="$(git log -1 "$env:GIT_COMMIT" --pretty="%cN")"
+$COMMIT_SUBJECT="$(git log -1 "$env:GIT_COMMIT" --pretty="%s")"
+$COMMIT_MESSAGE="$(git log -1 "$env:GIT_COMMIT" --pretty="%b")"
+$COMMIT_TIME="$(git log -1 "$env:GIT_COMMIT" --pretty="%ct")"
+
+$GIT_URL="$(git config --get remote.origin.url)"
+$JENKINS_REPO_SLUG=$GIT_URL -replace '.*github.com/', ''
+$JENKINS_REPO_SLUG=$JENKINS_REPO_SLUG -replace '[.]git.*', ''
 
 if ($AUTHOR_NAME -eq $COMMITTER_NAME) {
   $CREDITS="$AUTHOR_NAME authored & committed"
@@ -102,7 +106,7 @@ if ($IS_PR) {
   $URL="https://github.com/$JENKINS_REPO_SLUG/pulls"
 }
 else {
-  $URL="https://github.com/$JENKINS_REPO_SLUG/commit/$GIT_COMMIT"
+  $URL="https://github.com/$JENKINS_REPO_SLUG/commit/$env:GIT_COMMIT"
 }
 
 $TIMESTAMP="$(Get-Date -format s)Z"
@@ -112,8 +116,8 @@ $WEBHOOK_DATA="{
   ""embeds"": [ {
     ""color"": $EMBED_COLOR,
     ""author"": {
-      ""name"": ""#$BUILD_NUMBER - $REPO_NAME - $STATUS_MESSAGE"",
-      ""url"": ""$BUILD_URL/console"",
+      ""name"": ""#$env:BUILD_NUMBER - $REPO_NAME - $STATUS_MESSAGE"",
+      ""url"": ""$env:BUILD_URL/console"",
       ""icon_url"": ""$AVATAR""
     },
     ""title"": ""$COMMIT_SUBJECT"",
@@ -137,12 +141,12 @@ $WEBHOOK_DATA="{
       },
       {
         ""name"": ""Commit"",
-        ""value"": ""[``$($GIT_COMMIT.substring(0, 7))``](https://github.com/$JENKINS_REPO_SLUG/commit/$GIT_COMMIT)"",
+        ""value"": ""[``$($env:GIT_COMMIT.substring(0, 7))``](https://github.com/$JENKINS_REPO_SLUG/commit/$env:GIT_COMMIT)"",
         ""inline"": true
       },
       {
         ""name"": ""Branch/Tag"",
-        ""value"": ""[``${GIT_BRANCH}``](https://github.com/$JENKINS_REPO_SLUG/tree/${GIT_BRANCH})"",
+        ""value"": ""[``${env:GIT_BRANCH}``](https://github.com/$JENKINS_REPO_SLUG/tree/${env:GIT_BRANCH})"",
         ""inline"": true
       },
       {
@@ -158,7 +162,7 @@ $WEBHOOK_DATA="{
   } ]
 }"
 
-Invoke-RestMethod -Uri "$WEBHOOK_URL" -Method "POST" -UserAgent "AppVeyor-Webhook" `
+Invoke-RestMethod -Uri "$WEBHOOK_URL" -Method "POST" -UserAgent "Jenkins-Webhook" `
   -ContentType "application/json" -Header @{"X-Author"="k3rn31p4nic#8383"} `
   -Body $WEBHOOK_DATA
 

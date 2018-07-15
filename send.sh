@@ -52,9 +52,9 @@ COMMIT_SUBJECT="$(git log -1 "${GIT_COMMIT}" --pretty="%s")"
 COMMIT_MESSAGE="$(git log -1 "${GIT_COMMIT}" --pretty="%b")"
 COMMIT_TIME="$(git log -1 "${GIT_COMMIT}" --pretty="%ct")"
 
-GIT_URL=$(git config --get remote.origin.url)
-JENKINS_REPO_SLUG=${GIT_URL#*"github.com/"}
-JENKINS_REPO_SLUG=${JENKINS_REPO_SLUG%".git"*}
+GIT_URL="$(git config --get remote.origin.url)"
+JENKINS_REPO_SLUG="${GIT_URL#*"github.com/"}"
+JENKINS_REPO_SLUG="${JENKINS_REPO_SLUG%".git"*}"
 
 if [ "$AUTHOR_NAME" == "$COMMITTER_NAME" ]; then
   CREDITS="$AUTHOR_NAME authored & committed"
