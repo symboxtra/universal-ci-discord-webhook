@@ -1,0 +1,17 @@
+matrix:
+    include:
+        - os: osx
+        - os: linux
+
+before_install:
+    - set -o pipefail
+
+script:
+    - ./send.sh success $WEBHOOK_URL
+    - ./send.sh failure $WEBHOOK_URL
+    - ./send.sh unknown $WEBHOOK_URL
+
+# Use the old webhook to notify if the new webhook fails hehe
+after_failure:
+    - curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
+    - ./old-send.sh failure $REAL_WEBHOOK_URL
