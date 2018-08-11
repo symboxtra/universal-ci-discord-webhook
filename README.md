@@ -1,1 +1,1 @@
-# jenkins-discord-webhook
+# universal-ci-discord-webhook
