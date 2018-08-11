@@ -197,7 +197,7 @@ WEBHOOK_DATA='{
     "color": '${EMBED_COLOR}',
     "author": {
       "name": "#'"${BUILD_NUMBER}"' - '"${REPO_NAME}"' - '"${STATUS_MESSAGE}"'",
-      "url": "'"${BUILD_URL}""'",
+      "url": "'"${BUILD_URL}"'",
       "icon_url": "'"${AVATAR}"'"
     },
     "title": "'"${COMMIT_SUBJECT}"'",
