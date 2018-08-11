@@ -242,7 +242,13 @@ WEBHOOK_DATA='{
   } ]
 }'
 
-
+echo $WEBHOOK_DATA
 
 (curl -v --fail --progress-bar -A "${CI_PROVIDER}-Webhook" -H Content-Type:application/json -H X-Author:jmcker#6584 -d "${WEBHOOK_DATA}" "${WEBHOOK_URL}" \
-  && echo -e "\\n[Webhook]: Successfully sent the webhook.") || echo -e "\\n[Webhook]: Unable to send webhook."
+  && echo -e "\\n[Webhook]: Successfully sent the webhook.") 
+
+if [ $? -ne 0 ]; then
+    echo -e "Webhook data:\\n${WEBHOOK_DATA}"
+    echo -e "\\n[Webhook]: Unable to send webhook."
+    exit $?
+fi

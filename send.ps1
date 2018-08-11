@@ -246,6 +246,14 @@ Invoke-RestMethod -Uri "${WEBHOOK_URL}" -Method "POST" -UserAgent "${CI_PROVIDER
   -ContentType "application/json" -Header @{"X-Author"="jmcker#6584"} `
   -Body ${WEBHOOK_DATA}
 
+if ( -not $? )
+{
+    ""
+    Write-Output "Webhook Data:\n${WEBHOOK_DATA}"
+    Write-Output "[Webhook]: Unable to send webhook." -Foreground Red
+    exit 1
+}
+
 Write-Output "[Webhook]: Successfully sent the webhook."
 
 # Please note: this has never actually been tested with a Jenkins build on Windows.
