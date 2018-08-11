@@ -122,8 +122,8 @@ case $1 in
     AVATAR="${FAILED_AVATAR}"
     ;;
   * )
-    EMBED_COLOR=0
-    STATUS_MESSAGE="Status Unknown"
+    EMBED_COLOR=808080
+    STATUS_MESSAGE="Unknown"
     AVATAR="${UNKNOWN_AVATAR}"
     ;;
 esac
@@ -216,7 +216,7 @@ WEBHOOK_DATA='{
       },
       {
         "name": "Build ID",
-        "value": "'"${BUILD_NUMBER}CI"'",
+        "value": "'"${BUILD_NUMBER%.*}CI"'",
         "inline": true
       },
       {
