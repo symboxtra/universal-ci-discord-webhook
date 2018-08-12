@@ -234,7 +234,7 @@ if ( ${IS_PR} -AND "${PULL_REQUEST_ID}" -eq "") {
 $REPO_NAME=${REPO_SLUG} -replace '^[^/]*\/', ''
 
 # Create appropriate link
-if (${IS_PR}) {
+if ("${PULL_REQUEST_ID}" -ne "" -Or ${IS_PR}) {
     if (${PULL_REQUEST_ID}) {
         $URL="https://github.com/${REPO_SLUG}/pull/${PULL_REQUEST_ID}"
     }
