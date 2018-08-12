@@ -19,8 +19,9 @@ if (!$WEBHOOK_URL) {
 }
 
 $STRICT_MODE=False
-if ("$args[3]" -eq "strict")
+if ("$args[3]" -eq "strict") {
     $STRICT_MODE=True
+}
 
 # The following variables must be defined for each CI service:
 $CI_PROVIDER=""      # Name of CI provider

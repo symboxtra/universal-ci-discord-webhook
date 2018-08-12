@@ -23,4 +23,4 @@ build_script:
 
 on_failure:
     - ps: Invoke-RestMethod https://raw.githubusercontent.com/symboxtra/appveyor-discord-webhook/master/send.ps1 -o old-send.ps1
-    - ps: ./send.ps1 failure $env:REAL_WEBHOOK_URL
+    - ps: ./old-send.ps1 failure $env:REAL_WEBHOOK_URL
