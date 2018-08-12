@@ -5,6 +5,11 @@ pipeline {
         WEBHOOK_URL = credentials('WEBHOOK_URL')
     }
 
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+        timestamps()
+    }
+
     stages {
 
         stage('Test Linux') {
@@ -13,18 +18,29 @@ pipeline {
             }
 
             steps {
-                echo 'Testing Linux...'
+                script {
+                    currentBuild.displayName = env.BRANCH_NAME + " - #" + env.BUILD_NUMBER
+                }
+
+                sh """
+                    ./send.sh success $WEBHOOK_URL strict
+                    ./send.sh failure $WEBHOOK_URL strict
+                    ./send.sh unknown $WEBHOOK_URL strict
+                """
             }
             
             post {
                 always {
-                    echo 'always post'
+
                 }
                 success {
                     echo 'success post'
                 }
                 failure {
-                    echo 'fail post'
+                    sh """
+                        curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
+                        ./old-send.sh failure $REAL_WEBHOOK_URL
+                    """
                 }
             }
         }
