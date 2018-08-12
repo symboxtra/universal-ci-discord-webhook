@@ -28,28 +28,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Test Windows') {
-            agent {
-                label 'windows'
-            }
-
-            steps {
-                powershell 'echo "Testing Windows..."'
-            }
-            
-            post {
-                always {
-                    powershell 'Write-Host "always post"'
-                }
-                success {
-                    powershell 'Write-Host "success post"'
-                }
-                failure {
-                    powershell 'Write-Host "fail post"'
-                }
-            }
-        }
     }
 
 }
