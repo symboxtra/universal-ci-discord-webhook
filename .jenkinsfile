@@ -30,12 +30,6 @@ pipeline {
             }
             
             post {
-                always {
-
-                }
-                success {
-                    echo 'success post'
-                }
                 failure {
                     sh """
                         curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
