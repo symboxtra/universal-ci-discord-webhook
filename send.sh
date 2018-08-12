@@ -7,7 +7,7 @@
 WEBHOOK_VERSION="2.0.0.0"
 
 unamestr=`uname`
-if [[ "${unamestr}" == 'Darwin' ]]; then
+if [ "${unamestr}" = 'Darwin' ]; then
     OS_NAME="OSX"
 else
     OS_NAME="Linux"
@@ -17,16 +17,21 @@ STATUS="$1"
 WEBHOOK_URL="$2"
 CURRENT_TIME=`date +%s`
 
-if [ -z "${WEBHOOK_URL}" ]; then
+STRICT_MODE=false
+if [ "$3" = "strict" ]; then
+    STRICT_MODE=true
+fi
+
+if [ "${WEBHOOK_URL}" = "" ]; then
     echo -e "WARNING!"
     echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
     echo -e "For details & guidance, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    exit 1
-fi
 
-STRICT_MODE=false
-if [ "$3" == "strict" ]; then
-    STRICT_MODE=true
+    if [ "${STRICT_MODE}" = "true" ]; then
+        exit 1
+    else
+        exit 0
+    fi
 fi
 
 # The following variables must be defined for each CI service:
@@ -59,7 +64,7 @@ then
     PULL_REQUEST_ID="${TRAVIS_PULL_REQUEST}"
     REPO_SLUG="${TRAVIS_REPO_SLUG}"
     BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}"
-    if [[ ! -z "${TRAVIS_JOB_NUMBER}" ]]; then
+    if [ "${TRAVIS_JOB_NUMBER}" != "" ]; then
         BUILD_NUMBER="${TRAVIS_JOB_NUMBER}"
     fi
 
@@ -110,55 +115,71 @@ then
     BUILD_NUMBER="${BUILD_NUMBER}"
     BUILD_URL="${BUILD_URL}/console"
 
+else
+
+    echo "No CI service detected. Service not found or not supported? Open an issue on GitHub!"
+
+    if [ "${STRICT_MODE}" = "true" ]; then
+        exit 1
+    else
+        exit 0
+    fi
+
 fi
 
 # Check that all variables were found
 ALL_FOUND=true
 
-if [ -z "${CI_PROVIDER}" ]; then
+if [ "${CI_PROVIDER}" = "" ]; then
     echo "CI_PROVIDER not defined."
     ALL_FOUND=false
 fi
-if [ -z "${DISCORD_AVATAR}" ]; then
+if [ "${DISCORD_AVATAR}" = "" ]; then
     echo "DISCORD_AVATAR not defined."
     ALL_FOUND=false
 fi
-if [ -z "${SUCCESS_AVATAR}" ]; then
+if [ "${SUCCESS_AVATAR}" = "" ]; then
     echo "SUCCESS_AVATAR not defined."
     ALL_FOUND=false
 fi
-if [ -z "${FAILURE_AVATAR}" ]; then
+if [ "${FAILURE_AVATAR}" = "" ]; then
     echo "FAILURE_AVATAR not defined."
     ALL_FOUND=false
 fi
-if [ -z "${UNKNOWN_AVATAR}" ]; then
+if [ "${UNKNOWN_AVATAR}" = "" ]; then
     echo "UNKNOWN_AVATAR not defined."
     ALL_FOUND=false
 fi
-if [ -z "${COMMIT_HASH}" ]; then
+if [ "${BRANCH_NAME}" = "" ]; then
+    echo "BRANCH_NAME not defined."
+    ALL_FOUND=false
+fi
+if [ "${COMMIT_HASH}" = "" ]; then
     echo "COMMIT_HASH not defined."
     ALL_FOUND=false
 fi
-if [ -z "${REPO_SLUG}" ]; then
+if [ "${REPO_SLUG}" = "" ]; then
     echo "REPO_SLUG not defined."
     ALL_FOUND=false
 fi
-if [ -z "${BUILD_NUMBER}" ]; then
+if [ "${BUILD_NUMBER}" = "" ]; then
     echo "BUILD_NUMBER not defined."
     ALL_FOUND=false
 fi
-if [ -z "${BUILD_URL}" ]; then
+if [ "${BUILD_URL}" = "" ]; then
     echo "BUILD_URL not defined."
     ALL_FOUND=false
 fi
 
-if [ $STRICT_MODE ] && [ ! $ALL_FOUND ]; then
+if [ "${STRICT_MODE}" = "true" ] && [ "${ALL_FOUND}" = "false" ]; then
     echo "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
     exit 1
 fi
 
+echo
 echo -e "[Webhook]: ${CI_PROVIDER} CI detected."
 echo -e "[Webhook]: Sending webhook to Discord..."
+echo
 
 case $1 in
   "success" )
@@ -184,7 +205,7 @@ COMMIT_SUBJECT="$(git log -1 ${COMMIT_HASH} --pretty="%s")"
 COMMIT_MESSAGE="$(git log -1 ${COMMIT_HASH} --pretty="%b")"
 COMMIT_TIME="$(git log -1 ${COMMIT_HASH} --pretty="%ct")"
 
-if [ "${AUTHOR_NAME}" == "${COMMITTER_NAME}" ]; then
+if [ "${AUTHOR_NAME}" = "${COMMITTER_NAME}" ]; then
   CREDITS="${AUTHOR_NAME} authored & committed"
 else
   CREDITS="${AUTHOR_NAME} authored & ${COMMITTER_NAME} committed"
@@ -225,10 +246,10 @@ if [ "${#MATCHES[@]}" -gt 0 ]; then
 fi
 unset IFS
 
-if [ $IS_PR ] && [ -z "${PULL_REQUEST_ID}" ]; then
+if [ $IS_PR ] && [ "${PULL_REQUEST_ID}" = "" ]; then
     echo "PULL_REQUEST_ID not defined."
 
-    if [ $STRICT_MODE ]; then
+    if [ "${STRICT_MODE}" = "true" ]; then
         echo "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
         exit 1
     fi
@@ -238,8 +259,8 @@ fi
 REPO_NAME=${REPO_SLUG#*/}
 
 # Create appropriate link
-if [[ ! -z ${PULL_REQUEST_ID} ]] || [[ -n "${IS_PR}" ]]; then
-    if [[ ${PULL_REQUEST_ID} != false ]]; then
+if [ "${PULL_REQUEST_ID}" != "" ] || [ "${IS_PR}" = "true" ]; then
+    if [ "${PULL_REQUEST_ID}" != "" ]; then
         URL="https://github.com/${REPO_SLUG}/pull/${PULL_REQUEST_ID}"
     else
         URL="https://github.com/${REPO_SLUG}/pulls"
@@ -302,15 +323,16 @@ WEBHOOK_DATA='{
   } ]
 }'
 
-(curl -v --fail --progress-bar -A "${CI_PROVIDER}-Webhook" -H Content-Type:application/json -H X-Author:jmcker#6584 -d "${WEBHOOK_DATA}" "${WEBHOOK_URL}" \
-  && echo -e "\\n[Webhook]: Successfully sent the webhook.") 
+curl -v --fail --progress-bar -A "${CI_PROVIDER}-Webhook" -H Content-Type:application/json -H X-Author:jmcker#6584 -d "${WEBHOOK_DATA}" "${WEBHOOK_URL}"
 
 if [ $? -ne 0 ]; then
     echo -e "Webhook data:\\n${WEBHOOK_DATA}"
     echo -e "\\n[Webhook]: Unable to send webhook."
 
     # Don't exit with error unless we're in strict mode
-    if [ $STRICT_MODE ]; then
+    if [ "${STRICT_MODE}" = "true" ]; then
         exit 1
     fi
+else
+    echo -e "\\n[Webhook]: Successfully sent the webhook."
 fi

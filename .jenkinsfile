@@ -23,9 +23,9 @@ pipeline {
                 }
 
                 sh """
-                    ./send.sh success $WEBHOOK_URL strict
-                    ./send.sh failure $WEBHOOK_URL strict
-                    ./send.sh unknown $WEBHOOK_URL strict
+                    ./send.sh success $TEST_WEBHOOK_URL strict
+                    ./send.sh failure $TEST_WEBHOOK_URL strict
+                    ./send.sh unknown $TEST_WEBHOOK_URL strict
                 """
             }
             
@@ -33,7 +33,7 @@ pipeline {
                 failure {
                     sh """
                         curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
-                        ./old-send.sh failure $REAL_WEBHOOK_URL
+                        ./old-send.sh failure $WEBHOOK_URL
                     """
                 }
             }
