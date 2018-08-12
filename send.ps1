@@ -119,7 +119,7 @@ Switch ($STATUS) {
   }
   default {
     $EMBED_COLOR=8421504
-    Write-Output "Unknown"
+    $STATUS_MESSAGE="Unknown"
     $AVATAR="${UNKNOWN_AVATAR}"
     Break
   }
@@ -197,7 +197,7 @@ $WEBHOOK_DATA="{
     ""color"": ${EMBED_COLOR},
     ""author"": {
       ""name"": ""#${BUILD_NUMBER} - ${REPO_NAME} - ${STATUS_MESSAGE}"",
-      ""url"": ""${BUILD_URL}/console"",
+      ""url"": ""${BUILD_URL}"",
       ""icon_url"": ""${AVATAR}""
     },
     ""title"": ""${COMMIT_SUBJECT}"",
