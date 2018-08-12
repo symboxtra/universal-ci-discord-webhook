@@ -122,7 +122,7 @@ case $1 in
     AVATAR="${FAILED_AVATAR}"
     ;;
   * )
-    EMBED_COLOR=808080
+    EMBED_COLOR=8421504
     STATUS_MESSAGE="Unknown"
     AVATAR="${UNKNOWN_AVATAR}"
     ;;

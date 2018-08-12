@@ -118,7 +118,7 @@ Switch ($STATUS) {
     Break
   }
   default {
-    $EMBED_COLOR=808080
+    $EMBED_COLOR=8421504
     Write-Output "Unknown"
     $AVATAR="${UNKNOWN_AVATAR}"
     Break
