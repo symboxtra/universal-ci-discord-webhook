@@ -156,10 +156,10 @@ if [ -z "${BUILD_URL}" ]; then
     ALL_FOUND=false
 fi
 
-if [ $STRICT_MODE ] && [ ! $ALL_FOUND ] {
+if [ $STRICT_MODE ] && [ ! $ALL_FOUND ]; then
     echo "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
     exit 1
-}
+fi
 
 echo -e "[Webhook]: ${CI_PROVIDER} CI detected."
 echo -e "[Webhook]: Sending webhook to Discord..."

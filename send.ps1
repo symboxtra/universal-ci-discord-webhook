@@ -7,8 +7,8 @@ $WEBHOOK_VERSION="2.0.0.0"
 
 $OS_NAME="Windows"
 
-$STATUS=$args[0]
-$WEBHOOK_URL=$args[1]
+$STATUS="$args[0]"
+$WEBHOOK_URL="$args[1]"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
 
 if (!$WEBHOOK_URL) {
@@ -19,7 +19,7 @@ if (!$WEBHOOK_URL) {
 }
 
 $STRICT_MODE=False
-if ($args[3] -eq "strict")
+if ("$args[3]" -eq "strict")
     $STRICT_MODE=True
 
 # The following variables must be defined for each CI service:
