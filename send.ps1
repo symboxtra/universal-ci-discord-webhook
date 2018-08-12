@@ -1,13 +1,27 @@
-# Modified: Symboxtra Software
+# Author: Symboxtra Software
 # Author of Travis-CI-Discord Webhook and AppVeyor-Discord-Webhook:
 #    Sankarsan Kampa (a.k.a. k3rn31p4nic)
 # License: MIT
 
 $WEBHOOK_VERSION="2.0.0.0"
 
-$STATUS=$args[0]
-$WEBHOOK_URL=$args[1]
+$OS_NAME="Windows"
+
+$STATUS="$($args[0])"
+$WEBHOOK_URL="$($args[1])"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
+
+if (!$WEBHOOK_URL) {
+    Write-Output "WARNING!"
+    Write-Output "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
+    Write-Output "For details & guidance, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
+    exit 1
+}
+
+$STRICT_MODE=False
+if ("$($args[3])" -eq "strict") {
+    $STRICT_MODE=True
+}
 
 # The following variables must be defined for each CI service:
 $CI_PROVIDER=""      # Name of CI provider
@@ -87,18 +101,52 @@ elseif ( "${env:CI}" -eq "True" -And "${env:APPVEYOR}" -eq "True" ) {
 }
 else {
     Write-Output "No CI service detected. Service not found or not supported? Open an issue on GitHub!"
-    exit
+    exit 1
 }
 
-$OS_NAME="Windows"
+# Check that all variables were found
+$ALL_FOUND=True
 
+if ( "${CI_PROVIDER}" -eq "") {
+    Write-Output "CI_PROVIDER not defined."
+    $ALL_FOUND=False
+}
+if ( "${DISCORD_AVATAR}" -eq "") {
+    Write-Output "DISCORD_AVATAR not defined."
+    $ALL_FOUND=False
+}
+if ( "${SUCCESS_AVATAR}" -eq "") {
+    Write-Output "SUCCESS_AVATAR not defined."
+    $ALL_FOUND=False
+}
+if ( "${FAILURE_AVATAR}" -eq "") {
+    Write-Output "FAILURE_AVATAR not defined."
+    $ALL_FOUND=False
+}
+if ( "${UNKNOWN_AVATAR}" -eq "") {
+    Write-Output "UNKNOWN_AVATAR not defined."
+    $ALL_FOUND=False
+}
+if ( "${COMMIT_HASH}" -eq "") {
+    Write-Output "COMMIT_HASH not defined."
+    $ALL_FOUND=False
+}
+if ( "${REPO_SLUG}" -eq "") {
+    Write-Output "REPO_SLUG not defined."
+    $ALL_FOUND=False
+}
+if ( "${BUILD_NUMBER}" -eq "") {
+    Write-Output "BUILD_NUMBER not defined."
+    $ALL_FOUND=False
+}
+if ( "${BUILD_URL}" -eq "") {
+    Write-Output "BUILD_URL not defined."
+    $ALL_FOUND=False
+}
 
-
-if (!$WEBHOOK_URL) {
-    Write-Output "WARNING!!"
-    Write-Output "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
-    Write-Output "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    Exit
+if ($STRICT_MODE -And !$ALL_FOUND) {
+    Write-Output "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
+    exit 1
 }
 
 Write-Output "[Webhook]: ${CI_PROVIDER} CI detected."
@@ -173,11 +221,20 @@ if (${COMMIT_SUBJECT} -match 'Merge \w{40}\b into \w{40}\b') {
 
 }
 
+if ( ${IS_PR} -AND "${PULL_REQUEST_ID}" -eq "") {
+    Write-Output "PULL_REQUEST_ID not defined."
+
+    if ( ${STRICT_MODE} ) {
+        Write-Output "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
+        exit 1
+    }
+}
+
 # Remove repo owner: symboxtra/project -> project
 $REPO_NAME=${REPO_SLUG} -replace '^[^/]*\/', ''
 
 # Create appropriate link
-if (${IS_PR}) {
+if ("${PULL_REQUEST_ID}" -ne "" -Or ${IS_PR}) {
     if (${PULL_REQUEST_ID}) {
         $URL="https://github.com/${REPO_SLUG}/pull/${PULL_REQUEST_ID}"
     }
@@ -246,16 +303,19 @@ Invoke-RestMethod -Uri "${WEBHOOK_URL}" -Method "POST" -UserAgent "${CI_PROVIDER
   -ContentType "application/json" -Header @{"X-Author"="jmcker#6584"} `
   -Body ${WEBHOOK_DATA}
 
-if ( -not $? )
-{
+if ( -not $? ) {
     ""
     Write-Output "Webhook Data:\n${WEBHOOK_DATA}"
     Write-Output "[Webhook]: Unable to send webhook." -Foreground Red
-    exit 1
-}
 
-Write-Output "[Webhook]: Successfully sent the webhook."
+    # Don't exit with error unless we're in strict mode
+    if ($STRICT_MODE) {
+        exit 1
+    }
+}
+else {
+    Write-Output "[Webhook]: Successfully sent the webhook."
+}
 
 # Please note: this has never actually been tested with a Jenkins build on Windows.
 # There might be some issues. Can we fix it? Yes, we can. -- Bob the Builder
-
