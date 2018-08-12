@@ -1,0 +1,26 @@
+image: Visual Studio 2017
+
+environment:
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    GENERATOR: Visual Studio 15 2017
+    AUTOLINK: ON
+    STATIC: ON
+
+    WEBHOOK_URL:
+      secure: xy3jJldR20n3fT4ekICPX5cetYvwW3pt1NnAfCrdD/AMmjWIn6FtOKnh9O1bUwDlwBIALyO2Eec4JFL8LIMXXZPGChrvgpwFUJh/ADFmPV3YpEI/f/wA7M8oGeWH0cMP1m9V4VXslfsfH0ddmLrpMlWK8dtiZoZJrWcBUhf/VK8=
+    REAL_WEBHOOK_URL:
+      secure: xy3jJldR20n3fT4ekICPX5cetYvwW3pt1NnAfCrdD/Dxc4Xqz9vfwdtPNTFb28AFch8TyYWJva739YOFArmdBlHk8JmLqzQUrNom5VHpEdCcllpyvbroTlhE9Ah8BURvai5VhzsI9pmG4jItOXbeqIw1zRJNdqQxiK2/YOaD+RY=
+    CODECOV_TOKEN:
+      secure: eNc7TqI1d2bL+bIFGGUdK8Utwepy9RIwIi3jikaMPlbCjOrgZHFZLz+eL61mP0mB
+
+init:
+    - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
+
+build_script:
+    - ps: ./send.ps1 success $env:WEBHOOK_URL
+    - ps: ./send.ps1 failure $env:WEBHOOK_URL
+    - ps: ./send.ps1 unknown $env:WEBHOOK_URL
+
+on_failure:
+    - ps: Invoke-RestMethod https://raw.githubusercontent.com/symboxtra/appveyor-discord-webhook/master/send.ps1 -o old-send.ps1
+    #- ps: ./send.ps1 failure $env:REAL_WEBHOOK_URL

@@ -14,7 +14,6 @@ script:
     - ./send.sh unknown $WEBHOOK_URL
 
 # Use the old webhook to notify if the new webhook fails hehe
-# Disable this for a bit so that I don't annoy everyone
-#after_failure:
-    #- curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
-    #- ./old-send.sh failure $REAL_WEBHOOK_URL
+after_failure:
+    - curl https://raw.githubusercontent.com/symboxtra/travis-ci-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
+    - ./old-send.sh failure $REAL_WEBHOOK_URL
