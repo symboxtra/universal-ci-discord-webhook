@@ -18,9 +18,9 @@ WEBHOOK_URL="$2"
 CURRENT_TIME=`date +%s`
 
 if [ -z "${WEBHOOK_URL}" ]; then
-    echo -e "WARNING!!"
+    echo -e "WARNING!"
     echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
-    echo -e "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
+    echo -e "For details & guidance, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
     exit 1
 fi
 

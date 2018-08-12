@@ -1,4 +1,4 @@
-# Modified: Symboxtra Software
+# Author: Symboxtra Software
 # Author of Travis-CI-Discord Webhook and AppVeyor-Discord-Webhook:
 #    Sankarsan Kampa (a.k.a. k3rn31p4nic)
 # License: MIT
@@ -12,9 +12,9 @@ $WEBHOOK_URL="$($args[1])"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
 
 if (!$WEBHOOK_URL) {
-    Write-Output "WARNING!!"
+    Write-Output "WARNING!"
     Write-Output "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
-    Write-Output "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
+    Write-Output "For details & guidance, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
     exit 1
 }
 
