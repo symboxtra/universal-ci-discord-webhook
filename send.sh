@@ -238,7 +238,7 @@ fi
 REPO_NAME=${REPO_SLUG#*/}
 
 # Create appropriate link
-if [[ -n "${IS_PR}" ]]; then
+if [[ ! -z ${PULL_REQUEST_ID} ]] || [[ -n "${IS_PR}" ]]; then
     if [[ ${PULL_REQUEST_ID} != false ]]; then
         URL="https://github.com/${REPO_SLUG}/pull/${PULL_REQUEST_ID}"
     else
