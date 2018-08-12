@@ -17,9 +17,9 @@ init:
     - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
 
 build_script:
-    - ps: ./send.ps1 success $env:WEBHOOK_URL
-    - ps: ./send.ps1 failure $env:WEBHOOK_URL
-    - ps: ./send.ps1 unknown $env:WEBHOOK_URL
+    - ps: ./send.ps1 success $env:WEBHOOK_URL strict
+    - ps: ./send.ps1 failure $env:WEBHOOK_URL strict
+    - ps: ./send.ps1 unknown $env:WEBHOOK_URL strict
 
 on_failure:
     - ps: Invoke-RestMethod https://raw.githubusercontent.com/symboxtra/appveyor-discord-webhook/master/send.ps1 -o old-send.ps1

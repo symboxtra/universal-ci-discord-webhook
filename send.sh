@@ -139,10 +139,6 @@ if [ -z "${COMMIT_HASH}" ]; then
     echo "COMMIT_HASH not defined."
     ALL_FOUND=false
 fi
-if [ -z "${PULL_REQUEST_ID}" ]; then
-    echo "PULL_REQUEST_ID not defined."
-    ALL_FOUND=false
-fi
 if [ -z "${REPO_SLUG}" ]; then
     echo "REPO_SLUG not defined."
     ALL_FOUND=false
@@ -173,7 +169,7 @@ case $1 in
   "failure" )
     EMBED_COLOR=15158332
     STATUS_MESSAGE="Failed"
-    AVATAR="${FAILED_AVATAR}"
+    AVATAR="${FAILURE_AVATAR}"
     ;;
   * )
     EMBED_COLOR=8421504
@@ -228,6 +224,15 @@ if [ "${#MATCHES[@]}" -gt 0 ]; then
     done
 fi
 unset IFS
+
+if [ $IS_PR ] && [ -z "${PULL_REQUEST_ID}" ]; then
+    echo "PULL_REQUEST_ID not defined."
+
+    if [ $STRICT_MODE ]; then
+        echo "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
+        exit 1
+    fi
+fi
 
 # Remove repo owner: symboxtra/project -> project
 REPO_NAME=${REPO_SLUG#*/}

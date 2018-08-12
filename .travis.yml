@@ -9,9 +9,9 @@ before_install:
     - set -o pipefail
 
 script:
-    - ./send.sh success $WEBHOOK_URL
-    - ./send.sh failure $WEBHOOK_URL
-    - ./send.sh unknown $WEBHOOK_URL
+    - ./send.sh success $WEBHOOK_URL strict
+    - ./send.sh failure $WEBHOOK_URL strict
+    - ./send.sh unknown $WEBHOOK_URL strict
 
 # Use the old webhook to notify if the new webhook fails hehe
 after_failure:

@@ -7,8 +7,8 @@ $WEBHOOK_VERSION="2.0.0.0"
 
 $OS_NAME="Windows"
 
-$STATUS="$args[0]"
-$WEBHOOK_URL="$args[1]"
+$STATUS="$(args[0])"
+$WEBHOOK_URL="$(args[1])"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
 
 if (!$WEBHOOK_URL) {
@@ -19,7 +19,7 @@ if (!$WEBHOOK_URL) {
 }
 
 $STRICT_MODE=False
-if ("$args[3]" -eq "strict") {
+if ("$(args[3])" -eq "strict") {
     $STRICT_MODE=True
 }
 
@@ -131,10 +131,6 @@ if ( "${COMMIT_HASH}" -eq "") {
     Write-Output "COMMIT_HASH not defined."
     $ALL_FOUND=False
 }
-if ( "${PULL_REQUEST_ID}" -eq "") {
-    Write-Output "PULL_REQUEST_ID not defined."
-    $ALL_FOUND=False
-}
 if ( "${REPO_SLUG}" -eq "") {
     Write-Output "REPO_SLUG not defined."
     $ALL_FOUND=False
@@ -223,6 +219,15 @@ if (${COMMIT_SUBJECT} -match 'Merge \w{40}\b into \w{40}\b') {
         }
     }
 
+}
+
+if ( ${IS_PR} -AND "${PULL_REQUEST_ID}" -eq "") {
+    Write-Output "PULL_REQUEST_ID not defined."
+
+    if ( ${STRICT_MODE} ) {
+        Write-Output "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
+        exit 1
+    }
 }
 
 # Remove repo owner: symboxtra/project -> project
