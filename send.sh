@@ -6,9 +6,28 @@
 
 WEBHOOK_VERSION="2.0.0.0"
 
+unamestr=`uname`
+if [[ "${unamestr}" == 'Darwin' ]]; then
+    OS_NAME="OSX"
+else
+    OS_NAME="Linux"
+fi
+
 STATUS="$1"
 WEBHOOK_URL="$2"
 CURRENT_TIME=`date +%s`
+
+if [ -z "${WEBHOOK_URL}" ]; then
+    echo -e "WARNING!!"
+    echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
+    echo -e "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
+    exit
+fi
+
+STRICT_MODE=false
+if [ "$3" == "strict" ]; then
+    STRICT_MODE=true
+fi
 
 # The following variables must be defined for each CI service:
 CI_PROVIDER=""      # Name of CI provider
@@ -93,19 +112,54 @@ then
 
 fi
 
-unamestr=`uname`
-if [[ "${unamestr}" == 'Darwin' ]]; then
-    OS_NAME="OSX"
-else
-    OS_NAME="Linux"
+# Check that all variables were found
+ALL_FOUND=true
+
+if [ -z "${CI_PROVIDER}" ]; then
+    echo "CI_PROVIDER not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${DISCORD_AVATAR}" ]; then
+    echo "DISCORD_AVATAR not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${SUCCESS_AVATAR}" ]; then
+    echo "SUCCESS_AVATAR not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${FAILURE_AVATAR}" ]; then
+    echo "FAILURE_AVATAR not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${UNKNOWN_AVATAR}" ]; then
+    echo "UNKNOWN_AVATAR not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${COMMIT_HASH}" ]; then
+    echo "COMMIT_HASH not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${PULL_REQUEST_ID}" ]; then
+    echo "PULL_REQUEST_ID not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${REPO_SLUG}" ]; then
+    echo "REPO_SLUG not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${BUILD_NUMBER}" ]; then
+    echo "BUILD_NUMBER not defined."
+    ALL_FOUND=false
+fi
+if [ -z "${BUILD_URL}" ]; then
+    echo "BUILD_URL not defined."
+    ALL_FOUND=false
 fi
 
-if [ -z "${STATUS}" ]; then
-    echo -e "WARNING!!"
-    echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
-    echo -e "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    exit
-fi
+if [ $STRICT_MODE ] && [ ! $ALL_FOUND ] {
+    echo "[Webhook]: CI detection failed. Strict mode was enabled and one or more variables was undefined."
+    exit 1
+}
 
 echo -e "[Webhook]: ${CI_PROVIDER} CI detected."
 echo -e "[Webhook]: Sending webhook to Discord..."
@@ -249,5 +303,9 @@ WEBHOOK_DATA='{
 if [ $? -ne 0 ]; then
     echo -e "Webhook data:\\n${WEBHOOK_DATA}"
     echo -e "\\n[Webhook]: Unable to send webhook."
-    exit 1
+
+    # Don't exit with error unless we're in strict mode
+    if [ $STRICT_MODE ]; then
+        exit 1
+    fi
 fi
