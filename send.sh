@@ -141,7 +141,8 @@ else
 fi
 
 # Calculate approximate build time based on commit
-DISPLAY_TIME=$(date -u -d "0 ${CURRENT_TIME} seconds - ${COMMIT_TIME} seconds" +"%M:%S")
+DIFF_TIME=$(( ${CURRENT_TIME}-${COMMIT_TIME} ))
+DISPLAY_TIME="$( printf "%02d" $(( ${DIFF_TIME} / 60 ))):$( printf "%02d" $(( ${DIFF_TIME} % 60 )))"
 
 
 # Regex match co-author names
