@@ -110,7 +110,7 @@ then
     fi
 
     REPO_URL="$(git remote get-url origin)"
-    REPO_SLUG="$(echo ${REPO_URL} | sed -e 's/.*github.com//g' -e 's/[.].git.*//g')"
+    REPO_SLUG="$(echo ${REPO_URL} | sed -e 's/.*github.com\///g' -e 's/\.git.*//g')"
 
     BUILD_NUMBER="${BUILD_NUMBER}"
     BUILD_URL="${BUILD_URL}/console"
@@ -277,7 +277,7 @@ WEBHOOK_DATA='{
   "embeds": [ {
     "color": '${EMBED_COLOR}',
     "author": {
-      "name": "#'"${BUILD_NUMBER}"' - '"${REPO_NAME}"' - '"${STATUS_MESSAGE}"'",
+      "name": "'"${CI_PROVIDER}"' #'"${BUILD_NUMBER}"' - '"${REPO_NAME}"' - '"${STATUS_MESSAGE}"'",
       "url": "'"${BUILD_URL}"'",
       "icon_url": "'"${AVATAR}"'"
     },

@@ -81,8 +81,7 @@ if ( "${env:JENKINS_URL}" -ne "" ) {
     }
 
     $REPO_URL="$(git remote get-url origin)"
-    $REPO_SLUG=$REPO_URL -replace '.*github.com/', ''
-    $REPO_SLUG=$REPO_SLUG -replace '[.]git.*', ''
+    $REPO_SLUG=$($REPO_URL -replace '.*github.com/', '' -replace '\.git.*', '')
 
     $BUILD_NUMBER="${env:BUILD_NUMBER}"
     $BUILD_URL="${env:BUILD_URL}/console"
@@ -271,7 +270,7 @@ $WEBHOOK_DATA="{
   ""embeds"": [ {
     ""color"": ${EMBED_COLOR},
     ""author"": {
-      ""name"": ""#${BUILD_NUMBER} - ${REPO_NAME} - ${STATUS_MESSAGE}"",
+      ""name"": ""${CI_PROVIDER} #${BUILD_NUMBER} - ${REPO_NAME} - ${STATUS_MESSAGE}"",
       ""url"": ""${BUILD_URL}"",
       ""icon_url"": ""${AVATAR}""
     },
