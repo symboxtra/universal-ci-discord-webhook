@@ -30,17 +30,17 @@ if (!$WEBHOOK_URL) {
 }
 
 # The following variables must be defined for each CI service:
-$CI_PROVIDER=""      # Name of CI provider
-$DISCORD_AVATAR=""   # Large avatar for Discord user icon
-$SUCCESS_AVATAR=""   # Avatar for successful build
-$FAILURE_AVATAR=""   # Avatar for failed build
-$UNKNOWN_AVATAR=""   # Avatar for unknown build
-$BRANCH_NAME=""      # Branch name
-$COMMIT_HASH=""      # Hash of current commit
-$PULL_REQUEST_ID=""  # Id of PR if present
-$REPO_SLUG=""        # "owner/project" format for GitHub
-$BUILD_NUMBER=""     # Identifier for build
-$BUILD_URL=""        # Link to the build page
+# $CI_PROVIDER=""      # Name of CI provider
+# $DISCORD_AVATAR=""   # Large avatar for Discord user icon
+# $SUCCESS_AVATAR=""   # Avatar for successful build
+# $FAILURE_AVATAR=""   # Avatar for failed build
+# $UNKNOWN_AVATAR=""   # Avatar for unknown build
+# $BRANCH_NAME=""      # Branch name
+# $COMMIT_HASH=""      # Hash of current commit
+# $PULL_REQUEST_ID=""  # Id of PR if present
+# $REPO_SLUG=""        # "owner/project" format for GitHub
+# $BUILD_NUMBER=""     # Identifier for build
+# $BUILD_URL=""        # Link to the build page
 
 # These conditions come from the codecov bash script
 # Apache License Version 2.0, January 2004
