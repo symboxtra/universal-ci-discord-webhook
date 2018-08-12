@@ -1,0 +1,58 @@
+pipeline {
+    agent none
+
+    environment {
+        WEBHOOK_URL = credentials('WEBHOOK_URL')
+    }
+
+    stages {
+
+        stage('Test Linux') {
+            agent {
+                label 'linux'
+            }
+
+            steps {
+                echo 'Testing Linux...'
+            }
+            
+        post {
+            always {
+                echo "always post"
+            }
+            success {
+                echo "success post"
+            }
+            failure {
+                echo "fail post"
+            }
+        }
+
+    }
+
+    stages {
+
+        stage('Test Windows') {
+            agent {
+                label 'windows'
+            }
+
+            steps {
+                echo 'Testing Windows...'
+            }
+            
+        post {
+            always {
+                echo "always post"
+            }
+            success {
+                echo "success post"
+            }
+            failure {
+                echo "fail post"
+            }
+        }
+
+    }
+
+}
