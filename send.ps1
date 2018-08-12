@@ -7,19 +7,19 @@ $WEBHOOK_VERSION="2.0.0.0"
 
 $OS_NAME="Windows"
 
-$STATUS="$(args[0])"
-$WEBHOOK_URL="$(args[1])"
+$STATUS="$($args[0])"
+$WEBHOOK_URL="$($args[1])"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
 
 if (!$WEBHOOK_URL) {
     Write-Output "WARNING!!"
     Write-Output "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
     Write-Output "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    Exit
+    exit 1
 }
 
 $STRICT_MODE=False
-if ("$(args[3])" -eq "strict") {
+if ("$($args[3])" -eq "strict") {
     $STRICT_MODE=True
 }
 
@@ -101,7 +101,7 @@ elseif ( "${env:CI}" -eq "True" -And "${env:APPVEYOR}" -eq "True" ) {
 }
 else {
     Write-Output "No CI service detected. Service not found or not supported? Open an issue on GitHub!"
-    exit
+    exit 1
 }
 
 # Check that all variables were found

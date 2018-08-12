@@ -21,7 +21,7 @@ if [ -z "${WEBHOOK_URL}" ]; then
     echo -e "WARNING!!"
     echo -e "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
     echo -e "For details & guide, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    exit
+    exit 1
 fi
 
 STRICT_MODE=false
