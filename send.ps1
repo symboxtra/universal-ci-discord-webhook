@@ -11,30 +11,36 @@ $STATUS="$($args[0])"
 $WEBHOOK_URL="$($args[1])"
 $CURRENT_TIME=[int64](([datetime]::UtcNow)-(get-date "1/1/1970")).TotalSeconds
 
+$STRICT_MODE=$false
+if ("$($args[3])" -eq "strict") {
+    $STRICT_MODE=$true
+}
+
 if (!$WEBHOOK_URL) {
     Write-Output "WARNING!"
     Write-Output "You need to pass the WEBHOOK_URL environment variable as the second argument to this script."
     Write-Output "For details & guidance, visit: https://github.com/symboxtra/universal-ci-discord-webhook"
-    exit 1
-}
 
-$STRICT_MODE=False
-if ("$($args[3])" -eq "strict") {
-    $STRICT_MODE=True
+    if ($STRICT_MODE) {
+        exit 1
+    }
+    else {
+        exit
+    }
 }
 
 # The following variables must be defined for each CI service:
-$CI_PROVIDER=""      # Name of CI provider
-$DISCORD_AVATAR=""   # Large avatar for Discord user icon
-$SUCCESS_AVATAR=""   # Avatar for successful build
-$FAILURE_AVATAR=""   # Avatar for failed build
-$UNKNOWN_AVATAR=""   # Avatar for unknown build
-$BRANCH_NAME=""      # Branch name
-$COMMIT_HASH=""      # Hash of current commit
-$PULL_REQUEST_ID=""  # Id of PR if present
-$REPO_SLUG=""        # "owner/project" format for GitHub
-$BUILD_NUMBER=""     # Identifier for build
-$BUILD_URL=""        # Link to the build page
+# $CI_PROVIDER=""      # Name of CI provider
+# $DISCORD_AVATAR=""   # Large avatar for Discord user icon
+# $SUCCESS_AVATAR=""   # Avatar for successful build
+# $FAILURE_AVATAR=""   # Avatar for failed build
+# $UNKNOWN_AVATAR=""   # Avatar for unknown build
+# $BRANCH_NAME=""      # Branch name
+# $COMMIT_HASH=""      # Hash of current commit
+# $PULL_REQUEST_ID=""  # Id of PR if present
+# $REPO_SLUG=""        # "owner/project" format for GitHub
+# $BUILD_NUMBER=""     # Identifier for build
+# $BUILD_URL=""        # Link to the build page
 
 # These conditions come from the codecov bash script
 # Apache License Version 2.0, January 2004
@@ -75,8 +81,7 @@ if ( "${env:JENKINS_URL}" -ne "" ) {
     }
 
     $REPO_URL="$(git remote get-url origin)"
-    $REPO_SLUG=$REPO_URL -replace '.*github.com/', ''
-    $REPO_SLUG=$REPO_SLUG -replace '[.]git.*', ''
+    $REPO_SLUG=$($REPO_URL -replace '.*github.com/', '' -replace '\.git.*', '')
 
     $BUILD_NUMBER="${env:BUILD_NUMBER}"
     $BUILD_URL="${env:BUILD_URL}/console"
@@ -101,47 +106,57 @@ elseif ( "${env:CI}" -eq "True" -And "${env:APPVEYOR}" -eq "True" ) {
 }
 else {
     Write-Output "No CI service detected. Service not found or not supported? Open an issue on GitHub!"
-    exit 1
+
+    if ($STRICT_MODE) {
+        exit 1
+    }
+    else {
+        exit
+    }
 }
 
 # Check that all variables were found
-$ALL_FOUND=True
+$ALL_FOUND=$true
 
 if ( "${CI_PROVIDER}" -eq "") {
     Write-Output "CI_PROVIDER not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${DISCORD_AVATAR}" -eq "") {
     Write-Output "DISCORD_AVATAR not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${SUCCESS_AVATAR}" -eq "") {
     Write-Output "SUCCESS_AVATAR not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${FAILURE_AVATAR}" -eq "") {
     Write-Output "FAILURE_AVATAR not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${UNKNOWN_AVATAR}" -eq "") {
     Write-Output "UNKNOWN_AVATAR not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
+}
+if ( "${BRANCH_NAME}" -eq "") {
+    Write-Output "BRANCH_NAME not defined."
+    $ALL_FOUND=$false
 }
 if ( "${COMMIT_HASH}" -eq "") {
     Write-Output "COMMIT_HASH not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${REPO_SLUG}" -eq "") {
     Write-Output "REPO_SLUG not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${BUILD_NUMBER}" -eq "") {
     Write-Output "BUILD_NUMBER not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 if ( "${BUILD_URL}" -eq "") {
     Write-Output "BUILD_URL not defined."
-    $ALL_FOUND=False
+    $ALL_FOUND=$false
 }
 
 if ($STRICT_MODE -And !$ALL_FOUND) {
@@ -149,8 +164,10 @@ if ($STRICT_MODE -And !$ALL_FOUND) {
     exit 1
 }
 
+""
 Write-Output "[Webhook]: ${CI_PROVIDER} CI detected."
 Write-Output "[Webhook]: Sending webhook to Discord..."
+""
 
 Switch ($STATUS) {
   "success" {
@@ -208,7 +225,7 @@ else {
 # Replace git hashes in merge commits
 if (${COMMIT_SUBJECT} -match 'Merge \w{40}\b into \w{40}\b') {
 
-    $IS_PR=True
+    $IS_PR=$true
     [array] $RESULTS=[regex]::Matches("${COMMIT_SUBJECT}", '\w{40}\b')
     foreach ($MATCH in $RESULTS)
     {
@@ -253,7 +270,7 @@ $WEBHOOK_DATA="{
   ""embeds"": [ {
     ""color"": ${EMBED_COLOR},
     ""author"": {
-      ""name"": ""#${BUILD_NUMBER} - ${REPO_NAME} - ${STATUS_MESSAGE}"",
+      ""name"": ""${CI_PROVIDER} #${BUILD_NUMBER} - ${REPO_NAME} - ${STATUS_MESSAGE}"",
       ""url"": ""${BUILD_URL}"",
       ""icon_url"": ""${AVATAR}""
     },
