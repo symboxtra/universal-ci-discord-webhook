@@ -10,7 +10,7 @@ The following CI services are currently supported and will be autodetected when 
 | CI Service | Script | Support Status |
 |---|---|---|
 | AppVeyor | ```send.ps1``` | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/r06uj8lyogqiurmn/branch/master?svg=true)](https://ci.appveyor.com/project/symboxtra/universal-ci-discord-webhook/branch/master) |
-| Jenkins | ```send.ps1``` ```send.sh``` | [![Jenkins Build Status](http://symboxtra.dynu.net/jenkins/buildStatus/icon?job=universal-ci-discord-webhook/master)](http://symboxtra.dynu.net/jenkins/job/universal-ci-discord-webhook/job/master/) |
+| Jenkins | ```send.ps1``` ```send.sh``` | [![Jenkins Build Status](https://jenkins.symboxtra.dynu.net/buildStatus/icon?job=universal-ci-discord-webhook/master)](https://jenkins.symboxtra.dynu.net/job/universal-ci-discord-webhook/job/master/) |
 | Travis | ```send.sh``` | [![Travis Build Status](https://travis-ci.org/symboxtra/universal-ci-discord-webhook.svg?branch=master)](https://travis-ci.org/symboxtra/universal-ci-discord-webhook/builds) |
 
 We're always looking to support more! Feel free to implement support yourself or open an issue and ask. 
