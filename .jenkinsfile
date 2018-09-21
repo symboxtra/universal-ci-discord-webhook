@@ -13,29 +13,53 @@ pipeline {
 
     stages {
 
-        stage('Test Linux') {
-            agent {
-                label 'linux'
-            }
+        stage('Test') {
 
-            steps {
-                script {
-                    currentBuild.displayName = env.BRANCH_NAME + " - #" + env.BUILD_NUMBER
+            parallel {
+
+                stage('Test Linux') {
+                    agent {
+                        label 'linux'
+                    }
+
+                    steps {
+                        script {
+                            currentBuild.displayName = env.BRANCH_NAME + " - #" + env.BUILD_NUMBER
+                        }
+
+                        sh '''
+                            ./send.sh success $TEST_WEBHOOK_URL strict
+                            ./send.sh failure $TEST_WEBHOOK_URL strict
+                            ./send.sh unknown $TEST_WEBHOOK_URL strict
+                        '''
+                    }
+
+                    post {
+                        failure {
+                            sh '''
+                                curl https://raw.githubusercontent.com/symboxtra/jenkins-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
+                                ./old-send.sh failure $WEBHOOK_URL
+                            '''
+                        }
+                    }
                 }
 
-                sh """
-                    ./send.sh success $TEST_WEBHOOK_URL strict
-                    ./send.sh failure $TEST_WEBHOOK_URL strict
-                    ./send.sh unknown $TEST_WEBHOOK_URL strict
-                """
-            }
-            
-            post {
-                failure {
-                    sh """
-                        curl https://raw.githubusercontent.com/symboxtra/jenkins-discord-webhook/master/send.sh > old-send.sh && chmod +x old-send.sh
-                        ./old-send.sh failure $WEBHOOK_URL
-                    """
+                stage('Test Windows') {
+                    agent {
+                        label 'windows'
+                    }
+
+                    steps {
+                        script {
+                            currentBuild.displayName = env.BRANCH_NAME + " - #" + env.BUILD_NUMBER
+                        }
+
+                        powershell '''
+                            ./send.ps1 success $env:TEST_WEBHOOK_URL strict
+                            ./send.ps1 failure $env:TEST_WEBHOOK_URL strict
+                            ./send.ps1 unknown $env:TEST_WEBHOOK_URL strict
+                        '''
+                    }
                 }
             }
         }
