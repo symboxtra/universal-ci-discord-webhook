@@ -327,7 +327,7 @@ Invoke-RestMethod -Uri "${WEBHOOK_URL}" -Method "POST" -UserAgent "${CI_PROVIDER
 if ( -not $? ) {
     ""
     Write-Output "Webhook Data:\n${WEBHOOK_DATA}"
-    Write-Output "[Webhook]: Unable to send webhook." -Foreground Red
+    Write-Output "[Webhook]: Unable to send webhook."
 
     # Don't exit with error unless we're in strict mode
     if ($STRICT_MODE) {
@@ -338,5 +338,4 @@ else {
     Write-Output "[Webhook]: Successfully sent the webhook."
 }
 
-# Please note: this has never actually been tested with a Jenkins build on Windows.
-# There might be some issues. Can we fix it? Yes, we can. -- Bob the Builder
+# It's been tested on Windows Jenkins now :)
