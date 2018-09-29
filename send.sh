@@ -227,6 +227,10 @@ if [[ "${COMMIT_MESSAGE}" =~ Co-authored-by: ]]; then
         CO_AUTHORS="${CO_AUTHORS//,/, }"
     fi
     unset IFS
+    
+    # Clear the commit message
+    # This could be improved to just regex out the Co-authored-by messages
+    COMMIT_MESSAGE=""
 else
     CO_AUTHORS="None"
 fi
