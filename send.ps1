@@ -217,6 +217,10 @@ if (${COMMIT_MESSAGE} -match 'Co-authored-by:') {
         $CO_AUTHORS=$RESULTS.Value
     }
     $CO_AUTHORS = ${CO_AUTHORS} -join ', '
+    
+    # Clear the commit message
+    # This could be improved to just regex out the Co-authored-by messages
+    $COMMIT_MESSAGE=""
 }
 else {
     $CO_AUTHORS="None"
